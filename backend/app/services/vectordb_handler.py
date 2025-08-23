@@ -58,10 +58,10 @@ class VectorDBHandler:
     def delete_collection(self):
         self.client.delete_collection(collection_name=self.collection_name)
 
-    def search(self, user_query, chatbot_id):
+    def search(self, user_query):
         vector = self._generate_embedding(user_query)
         chatbot_filter = Filter(
-            must=[FieldCondition(key="chatbot_id", match=MatchValue(value=chatbot_id))]
+            must=[FieldCondition(key="chatbot_id", match=MatchValue(value=self.chatbot_id))]
         )
         resultpnt = self.client.query_points(collection_name=self.collection_name, query=vector,limit=3,with_payload=True,query_filter=chatbot_filter)
         return [point.payload.pop("chatbot_id") for point in resultpnt.points]
