@@ -22,7 +22,15 @@ class VectorDBHandler:
         if not self.client.collection_exists(self.collection_name):
             self.client.create_collection(
                 collection_name=f"{self.collection_name}",
-                vectors_config=models.VectorParams(size=384, distance=models.Distance.COSINE)
+                vectors_config=models.VectorParams(size=384, distance=models.Distance.COSINE),
+                optimizers_config=models.OptimizersConfigDiff(default_segment_number=1),
+                hnsw_config=None,
+                on_disk_payload=False
+            )
+            self.client.create_payload_index(
+                collection_name=self.collection_name,
+                field_name="chatbot_id",
+                field_schema=models.PayloadSchemaType.KEYWORD
             )
 
     def _generate_embedding(self, text):
@@ -47,21 +55,29 @@ class VectorDBHandler:
             })
         self.client.upsert(collection_name=self.collection_name, points=points)
 
+    def delete_collection(self):
+        self.client.delete_collection(collection_name=self.collection_name)
+
     def search(self, user_query, chatbot_id):
         vector = self._generate_embedding(user_query)
         chatbot_filter = Filter(
             must=[FieldCondition(key="chatbot_id", match=MatchValue(value=chatbot_id))]
         )
-        results = self.client.query_points(collection_name=self.collection_name, query=vector,limit=3)
-        return results.points
-
-
-faqs = [
-    {"question": "What is your return policy?", "answer": "You can return items within 30 days."},
-    {"question": "Do you ship internationally?", "answer": "Yes, worldwide shipping is available."}
-]
+        resultpnt = self.client.query_points(collection_name=self.collection_name, query=vector,limit=3,with_payload=True,query_filter=chatbot_filter)
+        return [point.payload.pop("chatbot_id") for point in resultpnt.points]
 
 
 db = VectorDBHandler('xyz')
-query = "Can i ship my order nationwise?"
-print(db.search(query,'xyz'))
+'''faq_list = [
+    {"question": "Do you ship internationally?", "answer": "Yes, worldwide shipping is available."},
+    {"question": "What is your return policy?", "answer": "You can return items within 30 days."}
+]
+db.upsert_faqs(faq_list)'''
+
+
+results = db.search("Can i buy men clothes?", "xyz")
+print(results)
+
+
+
+
