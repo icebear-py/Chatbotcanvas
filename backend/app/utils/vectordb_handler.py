@@ -1,5 +1,4 @@
 from qdrant_client import QdrantClient, models
-from qdrant_client.models import PointStruct, VectorParams
 from qdrant_client.models import Filter, FieldCondition, MatchValue
 from transformers import AutoTokenizer, AutoModel
 import os,uuid,warnings

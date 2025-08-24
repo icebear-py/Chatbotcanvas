@@ -1,9 +1,9 @@
 import os
 from langchain.prompts.chat import ChatPromptTemplate
-from vectordb_handler import VectorDBHandler
+from app.utils.vectordb_handler import VectorDBHandler
 from langchain.chat_models import ChatOpenAI
 
-def chat(query,chatbot_id):
+async def chat(query,chatbot_id):
     try:
         db = VectorDBHandler(chatbot_id)
         faqs_matched = db.search(query)
@@ -24,12 +24,7 @@ def chat(query,chatbot_id):
 
     except Exception as e:
         print(f"Error extracting FAQs: {str(e)}")
-        return str(e)
-
-
-print()
-for token in chat('im not available to collect my order , what should i do?','xyz'):
-    print(token, end="", flush=True)
+        yield str(e)
 
 
 
