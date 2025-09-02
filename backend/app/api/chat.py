@@ -19,3 +19,10 @@ def chat_ep(req : ChatRequest,api_key: str = Header(...)):
         chat(req.query, api_key),
         media_type="text/plain"
     )
+
+@router.post("/is_valid_api")
+def is_valid(api_key: str = Header(...)):
+    if not is_valid_api_key(api_key):
+        return {"message":"Incorrect API key","success": False}
+    else:
+        return {"message":"API key is valid","success": True}

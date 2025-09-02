@@ -1,68 +1,65 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* index.css — Tailwind CSS v3.4.9 */
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/* 1) Tailwind layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+/* 2) Base styles (global) */
+@layer base {
+  html, body, #root {
+    height: 100%;
   }
-  a:hover {
-    color: #747bff;
+
+  body {
+    /* Dark canvas + readable text */
+    @apply bg-[#0b1020] text-slate-100 antialiased;
+    /* Soft cyan radial glow behind the content */
+    background-image: radial-gradient(1200px 600px at 50% -10%, rgba(34,211,238,0.10), transparent 60%);
   }
-  button {
-    background-color: #f9f9f9;
+
+  /* Text selection */
+  ::selection {
+    @apply bg-cyan-500/30 text-white;
+  }
+}
+
+/* 3) Reusable utilities for this project */
+@layer utilities {
+  /* Gradient title like “ChatbotCanvas” */
+  .gradient-title {
+    background: linear-gradient(180deg, #A7C7FF 0%, #2BD3F6 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  /* Glassmorphism card surface */
+  .glass {
+    @apply bg-white/5 border border-white/10 backdrop-blur-md;
+  }
+
+  /* Hairline border helper */
+  .hairline {
+    @apply border border-white/10;
+  }
+
+  /* Soft cyan outer glow */
+  .shadow-glow {
+    box-shadow: 0 0 40px rgba(34, 211, 238, 0.25);
+  }
+
+  /* Radial background utility (matches bg-heroRadial used in components) */
+  .bg-heroRadial {
+    background-image: radial-gradient(1200px 600px at 50% -10%, rgba(34,211,238,0.18), transparent 60%);
+  }
+
+  /* A11y: visually hidden but accessible to screen readers */
+  .sr-only-not-focusable {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0);
+    white-space: nowrap; border: 0;
   }
 }
