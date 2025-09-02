@@ -1,6 +1,10 @@
 from fastapi import FastAPI
-from app.api import chat
 from fastapi.middleware.cors import CORSMiddleware
+from api import faqs
+from api import chat
+import warnings
+
+warnings.filterwarnings("ignore", message=".*torch.utils._pytree.register_pytree_node.*")
 
 
 app = FastAPI(
@@ -17,6 +21,7 @@ app.add_middleware(
 )
 
 app.include_router(chat.router, prefix="/api" ,tags=["Chat"])
+app.include_router(faqs.router, prefix="/api" ,tags=["Chat"])
 
 @app.get("/")
 async def root():

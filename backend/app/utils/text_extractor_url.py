@@ -3,9 +3,14 @@ import requests
 from bs4 import BeautifulSoup, Tag, NavigableString
 
 
-def extract_faqs(url: str):
-    html_content = requests.get(url).text
-    soup = BeautifulSoup(html_content, 'html.parser')
+def extract_text(url: str):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        html_content = response.text
+        soup = BeautifulSoup(html_content, 'html.parser')
+    except Exception as e:
+        return {'error': str(e)}
     faqs = ""
 
     # Strategy 1: Details/Summary elements
@@ -108,6 +113,7 @@ def extract_faqs(url: str):
                         attempts += 1
                     if question and answer:
                         faqs += f"{question} {answer}\n"
+
     return faqs
 
 
@@ -118,5 +124,3 @@ def clean_text(text: str) -> str:
     text = re.sub(r'^(Show|Hide|Toggle|Click|Expand|Collapse)\s*', '', text, flags=re.I)
     return text.strip()
 
-
-print(extract_faqs('https://www.mehar.com/india/faqs'))

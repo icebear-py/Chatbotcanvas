@@ -1,22 +1,21 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from app.utils.chat_handler import chat
+from utils.chat_handler import chat
+from utils.api_key import is_valid_api_key
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    query: str
 
 router = APIRouter()
 
 @router.post("/chat")
-async def chat_endpoint(request: Request):
-    data = await request.json()
-    #print(data)
-    query = data.get("query")
-    api_key = data.get("api_key")
+def chat_ep(req : ChatRequest,api_key: str = Header(...)):
+    if not is_valid_api_key(api_key):
+        print(req.query)
+        raise HTTPException(status_code=401, detail="Invalid API key")
 
-    if not api_key or not query:
-        return {'error':'Missing query or api_key'}
-
-    async def chat_stream():
-        async for chunk in chat(query, api_key):
-            yield chunk
-
-    return StreamingResponse(chat_stream(), media_type="text/plain")
-
+    return StreamingResponse(
+        chat(req.query, api_key),
+        media_type="text/plain"
+    )

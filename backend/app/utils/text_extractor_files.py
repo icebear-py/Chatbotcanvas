@@ -4,7 +4,7 @@ from docx import Document
 import io
 
 
-def extract_text_from_pdf(file_bytes: bytes):
+async def extract_text_from_pdf(file_bytes: bytes):
     reader = PdfReader(io.BytesIO(file_bytes))
     text = ""
     for page in reader.pages:
@@ -12,17 +12,17 @@ def extract_text_from_pdf(file_bytes: bytes):
     return text
 
 
-def extract_text_from_docx(file_bytes: bytes):
+async def extract_text_from_docx(file_bytes: bytes):
     doc = Document(io.BytesIO(file_bytes))
     text = "\n".join([para.text for para in doc.paragraphs if para.text.strip()])
     return text
 
 
-def extract_txt_from_txt(file_bytes: bytes):
+async def extract_txt_from_txt(file_bytes: bytes):
     return file_bytes.decode("utf-8", errors="ignore")
 
 
-def extract_text_from_excel(file_bytes: bytes):
+async def extract_text_from_excel(file_bytes: bytes):
     wb = load_workbook(io.BytesIO(file_bytes), data_only=True)
     text = ""
     for sheet in wb.sheetnames:
@@ -33,6 +33,6 @@ def extract_text_from_excel(file_bytes: bytes):
                 text += row_text + "\n"
     return text
 
-print(extract_text_from_url("https://www.bbotclothing.com/faqs"))
+
 
 
