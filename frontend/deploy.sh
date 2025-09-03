@@ -26,3 +26,4 @@ echo "1. Push your code to GitHub"
 echo "2. Connect your repository to Render"
 echo "3. Use the render.yaml configuration"
 echo "4. Update VITE_API_BASE_URL in render.yaml with your backend URL"
+

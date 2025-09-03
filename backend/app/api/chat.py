@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Header, HTTPException, Request
 from fastapi.responses import StreamingResponse
-from utils.chat_handler import chat
-from utils.api_key import is_valid_api_key
+from app.utils.chat_handler import chat
+from app.utils.api_key import is_valid_api_key
 from pydantic import BaseModel
 
 class ChatRequest(BaseModel):
