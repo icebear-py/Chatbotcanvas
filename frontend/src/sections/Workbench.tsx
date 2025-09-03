@@ -268,7 +268,7 @@ print(response.json())`
                 </div>
 
                 {/* URL input */}
-                <label className="block text-xs text-slate-400 mb-2">Website URL</label>
+                <label className="block text-xs text-slate-400 mb-2">Website FAQs URL</label>
                 <div className="relative mb-4">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
                     <LinkIcon width={16} height={16} />
@@ -276,7 +276,7 @@ print(response.json())`
                   <input
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
-                    placeholder="https://example.com"
+                    placeholder="https://example.com/faqs"
                     className="w-full rounded-lg bg-white/5 border border-white/10 pl-9 pr-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-cyan-400/50"
                   />
                 </div>

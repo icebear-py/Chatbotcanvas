@@ -15,7 +15,7 @@ const Hero: React.FC = () => {
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight">
-            <span>Chatbot</span><span className="gradient-title">Canvas</span>
+            <span className="gradient-title">ChatbotCanvas</span>
           </h1>
 
           <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed">

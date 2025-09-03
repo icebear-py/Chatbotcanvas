@@ -72,3 +72,23 @@ export const SendIcon: React.FC<IconProps> = (p) => (
     <path d="M5 12l14-8-5 8 5 8-14-8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 )
+
+export const InstantExtractionIcon: React.FC<IconProps> = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M12 7v6m0 0l-3-3m3 3l3-3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+)
+
+export const ApiKeyIcon: React.FC<IconProps> = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M7 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M10 12h11m-3-2l2 2-2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+)
+
+export const SmartChatIcon: React.FC<IconProps> = (p) => (
+  <svg viewBox="0 0 24 24" fill="none" {...p}>
+    <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8-1.174 0-2.3-.169-3.341-.48L4 20l1.549-3.66C4.574 15.077 4 13.596 4 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+)

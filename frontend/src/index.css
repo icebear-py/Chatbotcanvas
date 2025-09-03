@@ -32,7 +32,7 @@
 @layer utilities {
   /* Gradient title like “ChatbotCanvas” */
   .gradient-title {
-    background: linear-gradient(180deg, #A7C7FF 0%, #2BD3F6 100%);
+    background: linear-gradient(180deg, #055bee 0%, #2BD3F6 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
