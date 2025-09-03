@@ -14,8 +14,8 @@ class VectorDBHandler:
             url=os.getenv("QDRANT_URL"),
             api_key=os.getenv("QDRANT_API_KEY")
         )
-        self.tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2", local_files_only=True)
-        self.model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2", local_files_only=True)
+        self.tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+        self.model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
         self._create_collection()
 
     def _create_collection(self):
@@ -66,8 +66,6 @@ class VectorDBHandler:
         resultpnt = self.client.query_points(collection_name=self.collection_name, query=vector,limit=3,with_payload=True,query_filter=chatbot_filter)
         return [point.payload for point in resultpnt.points]
 
-db = VectorDBHandler('xyz')
-db.delete_collection()
 
 
 
