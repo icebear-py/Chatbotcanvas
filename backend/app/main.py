@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api import faqs
-from api import chat
+from app.api import faqs
+from app.api import chat
 import warnings
 
 warnings.filterwarnings("ignore", message=".*torch.utils._pytree.register_pytree_node.*")
