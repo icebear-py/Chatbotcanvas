@@ -17,12 +17,8 @@ import ChatPanel from '../components/ChatPanel'
 
 type Mode = 'extract' | 'chat'
 type Faq = { q: string; a: string }
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
-const sampleFaqs: Faq[] = [
-  { q: 'What is your return policy?', a: 'Returns are accepted within 30 days with proof of purchase.' },
-  { q: 'Do you support PDFs and DOCX?', a: 'Yes, upload PDF, DOC, DOCX, or TXT files for extraction.' },
-  { q: 'How fast is the extraction?', a: 'Most sites/documents extract in under 30 seconds.' },
-]
 
 const Workbench: React.FC = () => {
   const [mode, setMode] = React.useState<Mode>('extract')
@@ -30,9 +26,13 @@ const Workbench: React.FC = () => {
   // Extract mode state
   const [url, setUrl] = React.useState('')
   const [fileName, setFileName] = React.useState<string | null>(null)
+  const [file, setFile] = React.useState<File | null>(null)
   const [loading, setLoading] = React.useState(false)
   const [faqs, setFaqs] = React.useState<Faq[] | null>(null)
   const [apiKey, setApiKey] = React.useState<string>('')
+  const [faqsCount, setFaqsCount] = React.useState<number>(0)
+  const [copied, setCopied] = React.useState(false)
+  const [error, setError] = React.useState<string>('')
 
   // Chat mode state
   const [connectKey, setConnectKey] = React.useState<string>('')
@@ -40,57 +40,150 @@ const Workbench: React.FC = () => {
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const [connectionFailed, setConnectionFailed] = React.useState<boolean>(false)
 
+  // Refs for auto-scroll
+  const extractedDataRef = React.useRef<HTMLDivElement>(null)
+
   const onFile = (file?: File) => {
-    if (file) setFileName(file.name)
+    if (file) {
+      setFileName(file.name)
+      setFile(file)
+    }
+  }
+
+  // Auto-scroll to bottom of extracted data
+  const scrollToBottom = () => {
+    if (extractedDataRef.current) {
+      extractedDataRef.current.scrollTop = extractedDataRef.current.scrollHeight
+    }
+  }
+
+  // Show FAQ boxes one by one with auto-scroll
+  const showFaqs = async (faqsToShow: Faq[]) => {
+    setFaqs([])
+    setFaqsCount(faqsToShow.length)
+    
+    for (let i = 0; i < faqsToShow.length; i++) {
+      const faq = faqsToShow[i]
+      
+      // Add complete FAQ at once
+      setFaqs(prev => [...(prev || []), faq])
+      
+      // Auto-scroll to show the new FAQ
+      setTimeout(() => {
+        scrollToBottom()
+      }, 50)
+      
+      // Delay between FAQs
+      await new Promise(resolve => setTimeout(resolve, 600))
+    }
   }
 
   const handleExtract = async () => {
+    if (!url.trim() && !file) {
+      setError('Please provide either a URL or upload a file')
+      return
+    }
+
     setLoading(true)
     setFaqs(null)
-    // simulate async extraction
-    await new Promise((r) => setTimeout(r, 1200))
-    setFaqs(sampleFaqs)
-    setApiKey('sk_live_5d9f...example')
+    setError('')
+    setApiKey('')
+
+    try {
+      const formData = new FormData()
+      
+      if (url.trim()) {
+        formData.append('url', url.trim())
+      }
+      
+      if (file) {
+        formData.append('file', file)
+      }
+
+      console.log('Sending request to:', `${API_BASE_URL}/api/extract_faqs`)
+      console.log('FormData contents:', {
+        url: url.trim() || 'not provided',
+        file: file?.name || 'not provided'
+      })
+
+      const response = await axios.post(
+        `${API_BASE_URL}/api/extract_faqs`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+
+      console.log('Response received:', response.data)
+
+      if (response.data.faqs && response.data.faqs.length > 0) {
+        setApiKey(response.data.api_key)
+        // Map {question, answer} to {q, a}
+        const mappedFaqs = response.data.faqs.map((f: any) => ({
+          q: f.question,
+          a: f.answer,
+        }))
+        await showFaqs(mappedFaqs)
+      } else {
+        setError(response.data.message || 'No FAQs found')
+      }
+    } catch (err: any) {
+      console.error('Extraction error:', err)
+      setError(err.response?.data?.detail || 'Failed to extract FAQs. Please try again.')
+    }
+
     setLoading(false)
   }
 
   const copyKey = async () => {
     const value = apiKey || ''
     if (!value) return
-    await navigator.clipboard.writeText(value)
-    alert('API key copied')
+    
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy:', err)
+    }
   }
 
-  
-
-const connect = async () => {
-  if (!connectKey.trim()) return;
-  setConnecting(true);
-  setConnectionFailed(false);
-  try {
-    const res = await axios.post(
-      `${API_BASE_URL}/api/is_valid_api`,
-      {},
-      {
-        headers: {
-          "api-key": connectKey,
-        },
+  const connect = async () => {
+    if (!connectKey.trim()) return;
+    setConnecting(true);
+    setConnectionFailed(false);
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/api/is_valid_api`,
+        {},
+        {
+          headers: {
+            "api-key": connectKey,
+          },
+        }
+      );
+      if (res.data.success) {
+        setConnected(true);
+        setConnectionFailed(false);
+      } else {
+        setConnected(false);
+        setConnectionFailed(true);
       }
-    );
-    if (res.data.success) {
-      setConnected(true);
-      setConnectionFailed(false);
-    } else {
+    } catch (err) {
       setConnected(false);
       setConnectionFailed(true);
     }
-  } catch (err) {
-    setConnected(false);
-    setConnectionFailed(true);
-  }
-  setConnecting(false);
-};
+    setConnecting(false);
+  };
 
+  // Format API key for display (show first 25 characters, hide the rest)
+  const formatApiKey = (key: string) => {
+    if (!key) return 'API key will appear here after extraction…'
+    if (key.length <= 25) return key
+    return key.substring(0, 25) + '....'
+  }
 
   return (
     <section className="py-6 sm:py-10">
@@ -141,16 +234,24 @@ const connect = async () => {
                   <div className="flex flex-col items-center text-slate-400">
                     <UploadIcon width={22} height={22} className="text-cyan-300 mb-2" />
                     <span className="text-sm">{fileName ? fileName : 'Drop your file here or click to browse'}</span>
-                    <span className="text-xs text-slate-500">Supports PDF, DOC, DOCX, TXT files</span>
+                    <span className="text-xs text-slate-500">Supports PDF, DOC, DOCX, TXT, XLSX files</span>
                   </div>
                 </label>
                 <input
                   id="fileInput"
                   type="file"
-                  accept=".pdf,.doc,.docx,.txt"
+                  accept=".pdf,.doc,.docx,.txt,.xlsx"
                   className="hidden"
                   onChange={(e) => onFile(e.target.files?.[0])}
                 />
+
+                {/* Error message */}
+                {error && (
+                  <div className="mt-3 flex items-center gap-2 rounded-lg bg-red-900/60 text-red-400 text-xs px-3 py-2 border border-red-400/20">
+                    <XCircle className="w-4 h-4" />
+                    <span>{error}</span>
+                  </div>
+                )}
 
                 {/* Action */}
                 <div className="mt-4">
@@ -165,16 +266,21 @@ const connect = async () => {
                 <h3 className="text-sm font-semibold text-slate-200 mb-3">API Key</h3>
                 <div className="relative">
                   <input
-                    value={apiKey || 'API key will appear here after extraction…'}
+                    value={formatApiKey(apiKey)}
                     readOnly
                     className="w-full rounded-lg bg-white/5 border border-white/10 pr-12 pl-3 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-cyan-400/50"
                   />
                   <button
                     onClick={copyKey}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md hover:bg-white/10 text-slate-200"
+                    disabled={!apiKey}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md hover:bg-white/10 text-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Copy API key"
                   >
-                    <CopyIcon width={16} height={16} />
+                    {copied ? (
+                      <CheckCircle width={16} height={16} className="text-green-400" />
+                    ) : (
+                      <CopyIcon width={16} height={16} />
+                    )}
                   </button>
                 </div>
                 <p className="mt-2 text-xs text-slate-500">Keep your API key secure. It will be used to connect your chatbot.</p>
@@ -182,13 +288,18 @@ const connect = async () => {
             </div>
 
             {/* Right column: Extracted Data */}
-            <div className="glass rounded-2xl p-5 sm:p-6 min-h-[22rem]">
+            <div className="glass rounded-2xl p-5 sm:p-6 h-[600px] flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-slate-200">Extracted Data</h3>
+                {faqsCount > 0 && (
+                  <span className="text-xs text-cyan-400 bg-cyan-400/10 px-2 py-1 rounded-full">
+                    {faqsCount} FAQs
+                  </span>
+                )}
               </div>
 
               {!faqs ? (
-                <div className="h-[18rem] grid place-items-center text-center text-slate-400">
+                <div className="flex-1 grid place-items-center text-center text-slate-400">
                   <div>
                     <div className="mx-auto mb-3 grid place-items-center w-12 h-12 rounded-xl bg-white/5 border border-white/10">
                       <span className="text-2xl">?</span>
@@ -198,11 +309,18 @@ const connect = async () => {
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div 
+                  ref={extractedDataRef}
+                  className="flex-1 space-y-4 overflow-y-auto pr-2"
+                >
                   {faqs.map((f, i) => (
                     <div key={i} className="rounded-lg bg-white/5 border border-white/10 p-4">
-                      <p className="font-medium text-slate-200">Q{i + 1}. {f.q}</p>
-                      <p className="text-sm text-slate-300 mt-1">{f.a}</p>
+                      <p className="font-medium text-slate-200 mb-2">
+                        <span className="text-cyan-400">Q{i + 1}.</span> {f.q}
+                      </p>
+                      <p className="text-sm text-slate-300 leading-relaxed">
+                        <span className="text-slate-400">A:</span> {f.a}
+                      </p>
                     </div>
                   ))}
                 </div>

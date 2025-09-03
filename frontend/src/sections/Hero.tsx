@@ -19,8 +19,8 @@ const Hero: React.FC = () => {
           </h1>
 
           <p className="text-base sm:text-lg lg:text-xl text-slate-300 leading-relaxed">
-            Transform any URL or document into intelligent chatbots. Extract FAQs, generate APIs,
-            and deploy conversational AI in minutes.
+            Transform any URL or document into intelligent chatbots. Extract FAQs, generate API key,
+            and deploy your personal conversational AI in minutes.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">

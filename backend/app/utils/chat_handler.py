@@ -10,8 +10,11 @@ async def chat(query: str, chatbot_id: str):
 
         faq_prompt = ChatPromptTemplate.from_messages([
             ("system",
-             "You are a helpful assistant. Based on the provided FAQs, "
-             "Answer the user's question in plain text and elaborate where useful.\n\n"
+             "You are a helpful assistant. Use the provided FAQs to answer the user’s question.\n\n"
+             "- Always base your response on the most relevant or semantically similar FAQ.\n"
+             "- If there is no exact match, adapt the closest FAQ and give a clear, natural answer.\n"
+             "- Do not say that the FAQs do not mention the topic.\n"
+             "- Respond only in plain text and elaborate where useful.\n\n"
              "FAQs: {faqs_matched}"),
             ("user", "{query}")
         ])

@@ -1,5 +1,4 @@
 import React from 'react'
-import axios from 'axios'
 import ChatMessage from './ChatMessage'
 import type { ChatRole } from './ChatMessage'
 import { BotIcon, SendIcon } from './icons'
@@ -23,6 +22,18 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ apiKey, connected }) => {
   ])
   const [input, setInput] = React.useState('')
   const [sending, setSending] = React.useState(false)
+  const messagesContainerRef = React.useRef<HTMLDivElement>(null)
+
+  // Auto-scroll to bottom within the chat container only
+  const scrollToBottom = () => {
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight
+    }
+  }
+
+  React.useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   const onSend = async () => {
     const value = input.trim()
@@ -33,35 +44,63 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ apiKey, connected }) => {
     setMessages((m) => [...m, userMsg])
     setInput('')
 
-    try {
-      // Make actual API call with the API key
-      const response = await axios.post(
-        `${API_BASE_URL}/api/chat`, // Adjust this endpoint as needed
-        {
-          query: value
-        },
-        {
-          headers: {
-            "api-key": apiKey,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+    // Create a placeholder message for the streaming response
+    const botMsgId = crypto.randomUUID()
+    const botMsg: Msg = { id: botMsgId, role: 'assistant', content: '' }
+    setMessages((m) => [...m, botMsg])
 
-      const botMsg: Msg = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: response.data.message || response.data.response || 'No response received',
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'api-key': apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: value
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
-      setMessages((m) => [...m, botMsg])
+
+      const reader = response.body?.getReader()
+      if (!reader) {
+        throw new Error('No response body')
+      }
+
+      const decoder = new TextDecoder()
+      let accumulatedContent = ''
+
+      while (true) {
+        const { done, value } = await reader.read()
+        
+        if (done) break
+
+        const chunk = decoder.decode(value, { stream: true })
+        accumulatedContent += chunk
+
+        // Update the bot message with accumulated content
+        setMessages((prevMessages) =>
+          prevMessages.map((msg) =>
+            msg.id === botMsgId
+              ? { ...msg, content: accumulatedContent }
+              : msg
+          )
+        )
+      }
     } catch (error) {
       console.error('Chat error:', error)
-      const errorMsg: Msg = {
-        id: crypto.randomUUID(),
-        role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
-      }
-      setMessages((m) => [...m, errorMsg])
+      
+      // Update the bot message with error content
+      setMessages((prevMessages) =>
+        prevMessages.map((msg) =>
+          msg.id === botMsgId
+            ? { ...msg, content: 'Sorry, I encountered an error. Please try again.' }
+            : msg
+        )
+      )
     }
 
     setSending(false)
@@ -92,7 +131,10 @@ const ChatPanel: React.FC<ChatPanelProps> = ({ apiKey, connected }) => {
       </div>
 
       {/* Messages */}
-      <div className="h-[380px] sm:h-[460px] overflow-y-auto p-3 sm:p-4 space-y-3">
+      <div 
+        ref={messagesContainerRef}
+        className="h-[380px] sm:h-[460px] overflow-y-auto p-3 sm:p-4 space-y-3"
+      >
         {messages.map((m) => (
           <ChatMessage key={m.id} role={m.role} content={m.content} />
         ))}

@@ -39,7 +39,7 @@ async def extract_faqs(url: str = Form(None), file: UploadFile = File(None)):
 
     faqs = extract_faqs_from_text(combined_text)
     try:
-        if len(faqs) == 0:
+        if not faqs:
             raise HTTPException(status_code=400, detail="No valid questions found.")
 
         api_key = generate_api_key()
