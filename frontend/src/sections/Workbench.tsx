@@ -39,6 +39,9 @@ const Workbench: React.FC = () => {
   const [connected, setConnected] = React.useState<boolean>(false)
   const [connecting, setConnecting] = React.useState<boolean>(false)
   const [connectionFailed, setConnectionFailed] = React.useState<boolean>(false)
+  const [isApiDocsOpen, setIsApiDocsOpen] = React.useState<boolean>(false)
+  const [copiedEndpoint, setCopiedEndpoint] = React.useState<boolean>(false)
+  const [selectedLanguage, setSelectedLanguage] = React.useState<'curl' | 'python' | 'javascript'>('curl')
 
   // Refs for auto-scroll
   const extractedDataRef = React.useRef<HTMLDivElement>(null)
@@ -150,8 +153,61 @@ const Workbench: React.FC = () => {
     }
   }
 
+  const getCodeSnippet = (language: 'curl' | 'python' | 'javascript') => {
+    const apiKey = connected ? connectKey : '<your-api-key>'
+    
+    switch (language) {
+      case 'curl':
+        return `curl -X POST "${API_BASE_URL}/api/chat" \\
+  -H "Content-Type: application/json" \\
+  -H "api-key: ${apiKey}" \\
+  -d '{"message": "your question here"}'`
+
+      case 'python':
+        return `import requests
+
+headers = {
+    "Content-Type": "application/json",
+    "api-key": "${apiKey}"
+}
+
+response = requests.post(
+    "${API_BASE_URL}/api/chat",
+    headers=headers,
+    json={"message": "your question here"}
+)
+
+print(response.json())`
+
+      case 'javascript':
+        return `fetch("${API_BASE_URL}/api/chat", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "api-key": "${apiKey}"
+    },
+    body: JSON.stringify({
+        message: "your question here"
+    })
+})
+.then(response => response.json())
+.then(data => console.log(data))`
+    }
+  }
+
+  const copyEndpoint = async () => {
+    const code = getCodeSnippet(selectedLanguage)
+    try {
+      await navigator.clipboard.writeText(code)
+      setCopiedEndpoint(true)
+      setTimeout(() => setCopiedEndpoint(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy endpoint:', err)
+    }
+  }
+
   const connect = async () => {
-    if (!connectKey.trim()) return;
+    if (!connectKey.trim() || !connectKey.startsWith("cb_canvas")) return;
     setConnecting(true);
     setConnectionFailed(false);
     try {
@@ -186,7 +242,7 @@ const Workbench: React.FC = () => {
   }
 
   return (
-    <section className="py-6 sm:py-10">
+    <section id="extract" className="py-6 sm:py-10">
       <Container>
         {/* Toggle Extract / Chat */}
         <div className="flex justify-center">
@@ -288,7 +344,7 @@ const Workbench: React.FC = () => {
             </div>
 
             {/* Right column: Extracted Data */}
-            <div className="glass rounded-2xl p-5 sm:p-6 h-[600px] flex flex-col">
+            <div className="glass rounded-2xl p-5 sm:p-6 h-[550px] flex flex-col">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-slate-200">Extracted Data</h3>
                 {faqsCount > 0 && (
@@ -384,6 +440,72 @@ const Workbench: React.FC = () => {
 
             {/* Right column: Chat Panel */}
             <ChatPanel apiKey={connectKey} connected={connected} />
+
+            {/* API Documentation */}
+            <div className="glass rounded-2xl p-5 sm:p-1">
+              <button
+                onClick={() => setIsApiDocsOpen(!isApiDocsOpen)}
+                className="w-full flex items-center justify-between text-sm font-semibold text-slate-200 mb-2"
+              >
+                <span className="flex items-center gap-2 mt-2 ml-3">
+                  <ChatIcon width={18} height={18} className="text-cyan-300" />
+                  API Documentation
+                </span>
+                <span className={`transition-transform mr-3 ${isApiDocsOpen ? 'rotate-180' : ''}`}>
+                  ▼
+                </span>
+              </button>
+              
+              {isApiDocsOpen && (
+                <div className="space-y-4 animate-fadeIn p-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    {(['curl', 'python', 'javascript'] as const).map((lang) => (
+                      <button
+                        key={lang}
+                        onClick={() => setSelectedLanguage(lang)}
+                        className={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                          selectedLanguage === lang
+                            ? 'bg-cyan-600 text-white'
+                            : 'text-slate-400 hover:bg-white/5'
+                        }`}
+                      >
+                        {lang === 'javascript' ? 'JS' : lang.charAt(0).toUpperCase() + lang.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="rounded-lg bg-black/30 p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-slate-400">
+                        {selectedLanguage === 'curl' ? 'cURL Command' : 
+                         selectedLanguage === 'python' ? 'Python Request' : 
+                         'JavaScript Fetch'}
+                      </span>
+                      <button
+                        onClick={copyEndpoint}
+                        className="p-1.5 rounded hover:bg-white/5 text-slate-400"
+                        title="Copy to clipboard"
+                      >
+                        {copiedEndpoint ? (
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                        ) : (
+                          <CopyIcon className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                    <pre className="text-sm text-slate-300 font-mono whitespace-pre-wrap overflow-x-auto">
+                      {getCodeSnippet(selectedLanguage)}
+                    </pre>
+                  </div>
+                  
+                  <div className="text-xs text-slate-500 leading-relaxed">
+                    <p>• The Chat API accepts POST requests with your message in JSON format</p>
+                    <p>• Include your API key in the request headers for authentication</p>
+                    <p>• The API will return streaming response based on the FAQs extracted from your content</p>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         )}
       </Container>

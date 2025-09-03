@@ -14,6 +14,7 @@ export const XCircle: React.FC<IconProps> = (p) => (
 import React from 'react'
 type IconProps = React.SVGProps<SVGSVGElement>
 
+
 export const SparkIcon: React.FC<IconProps> = (p) => (
   <svg viewBox="0 0 24 24" fill="none" {...p}>
     <path d="M12 3l2.1 4.26L19 8.27l-3.5 3.41.82 4.79L12 14.77l-4.32 1.7.82-4.79L5 8.27l4.9-.99L12 3z" stroke="currentColor" />

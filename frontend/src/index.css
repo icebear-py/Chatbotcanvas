@@ -7,6 +7,10 @@
 
 /* 2) Base styles (global) */
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   html, body, #root {
     height: 100%;
   }
