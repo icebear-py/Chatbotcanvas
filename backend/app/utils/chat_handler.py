@@ -1,7 +1,7 @@
 import os
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from utils.vectordb_handler import VectorDBHandler
+from app.utils.vectordb_handler import VectorDBHandler
 
 async def chat(query: str, chatbot_id: str):
     try:

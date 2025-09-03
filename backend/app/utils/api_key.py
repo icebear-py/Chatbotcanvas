@@ -1,5 +1,5 @@
 import secrets
-from utils.vectordb_handler import VectorDBHandler
+from app.utils.vectordb_handler import VectorDBHandler
 from qdrant_client.models import Filter,MatchValue,FieldCondition
 
 

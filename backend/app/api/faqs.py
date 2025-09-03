@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Header, HTTPException, Form, UploadFile, File
-from app.utils.text_extractor_files import (
+from utils.text_extractor_files import (
     extract_text_from_pdf,
     extract_text_from_docx,
     extract_txt_from_txt,
     extract_text_from_excel
 )
-from app.utils.text_extractor_url import extract_text
-from app.utils.faqs_extractor import extract_faqs_from_text
-from app.utils.vectordb_handler import VectorDBHandler
-from app.utils.api_key import generate_api_key
+from utils.text_extractor_url import extract_text
+from utils.faqs_extractor import extract_faqs_from_text
+from utils.vectordb_handler import VectorDBHandler
+from utils.api_key import generate_api_key
 
 
 router = APIRouter()
