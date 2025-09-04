@@ -1,6 +1,7 @@
 import React from 'react'
 import Container from './Container'
 import logo from './logo.jpg'
+import { GitHubIcon, InstagramIcon, MailIcon } from './icons'
 
 const GITHUB_REPO = 'https://github.com/icebear-py/chatbotcanvas'
 
@@ -21,6 +22,36 @@ const Navbar: React.FC = () => {
 
           {/* Navigation */}
           <div className="flex items-center gap-4">
+            {/* Social Media Icons */}
+            <div className="flex items-center gap-3">
+              <a
+                href="https://github.com/icebear-py"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
+                title="GitHub"
+              >
+                <GitHubIcon className="w-5 h-5 text-slate-300 group-hover:text-white transition-colors" />
+              </a>
+              <a
+                href="https://www.instagram.com/anshh.py"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
+                title="Instagram"
+              >
+                <InstagramIcon className="w-5 h-5 text-slate-300 group-hover:text-white transition-colors" />
+              </a>
+              <a
+                href="mailto:voidandemptyy@gmail.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition-colors group"
+                title="Email"
+              >
+                <MailIcon className="w-5 h-5 text-slate-300 group-hover:text-white transition-colors" />
+              </a>
+            </div>
             
             <a
               href={GITHUB_REPO}
