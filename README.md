@@ -16,7 +16,7 @@ Coming soon — add screenshots or video links here.
 - Extract dynamic content from URLs using Playwright or BeautifulSoup.
 - Parse and structure FAQs into clean JSON.
 - Store embeddings in Qdrant VectorDB for semantic search.
-- Query with LLMs via OpenRouter API.
+- Use RAG pipelines with OpenRouter LLMs to generate natural, context-aware responses.
 - Multi-tenant API key access for users.
 - Frontend: React + Vite + TailwindCSS.
 - Backend: FastAPI.
