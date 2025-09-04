@@ -78,6 +78,7 @@ This starts the app at http://localhost:5173.
 ### Get free Api keys for env
 
 Free LLMs via Openrouter : https://openrouter.ai/
+
 Free tier vectordb via Qdrant : https://qdrant.tech/pricing/
 
 ### Backend .env
