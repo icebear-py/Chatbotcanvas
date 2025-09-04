@@ -7,7 +7,9 @@ load_dotenv()
 
 def extract_faqs_from_text(text: str):
     faq_prompt = ChatPromptTemplate.from_messages([
-        ("system", """You are an assistant that extracts FAQs from raw text and HTML text.The FAQs must be in JSON list format with keys 'question' and 'answer'. Return only one single valid JSON list of all FAQs,no explanation, no markdown fences. ,if you think of additional FAQs (like website name, product type, contact info), add them to the SAME list."""),
+        ("system", """You are an assistant that extracts FAQs from raw text and HTML text. Read the documents and find all the relevant question and answers that can be framed.
+        The FAQs must be in JSON list format with keys 'question' and 'answer'. 
+        Return only one single valid JSON list of all FAQs,no explanation, no markdown fences ,if you think of additional question answers, add them to the SAME list."""),
         ("user", "{text}")
     ])
 
