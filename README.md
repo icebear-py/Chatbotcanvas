@@ -1,4 +1,4 @@
-# ChatbotCanvas 🤖
+# ChatbotCanvas - Build your own chatbot in minutes
 
 ChatbotCanvas is a platform that allows you to extract FAQs from websites or documents, transform them into structured data, and store them in a vector database for semantic search. It integrates with modern LLMs to let you build and deploy your own intelligent chatbots quickly and easily.
 
