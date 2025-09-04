@@ -75,6 +75,10 @@ This starts the app at http://localhost:5173.
 
 ## ⚙️ Environment Variables
 
+### Free api keys for env
+ # Free LLMs via OpenRouter : https://openrouter.ai/
+ # Free 1gb Vectordb via Qdrant : https://qdrant.tech/pricing/
+
 ### Backend .env
 
 Create `backend/.env`:
