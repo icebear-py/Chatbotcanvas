@@ -25,7 +25,7 @@ const Hero: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <ButtonPrimary onClick={() => document.getElementById('extract')?.scrollIntoView()}>Get Started Free</ButtonPrimary>
-            <ButtonGhost><PlayIcon width={16} height={16} className="-ml-1 mr-2" /> Watch Demo</ButtonGhost>
+            <ButtonGhost onClick={() => window.open('https://github.com/user-attachments/assets/444ce904-81ce-455e-983d-e41914cd5831', '_blank')}><PlayIcon width={16} height={16} className="-ml-1 mr-2" /> Watch Demo</ButtonGhost>
           </div>
         </div>
       </Container>
