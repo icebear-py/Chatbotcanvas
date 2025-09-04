@@ -1,4 +1,4 @@
-# ChatbotCanvas - Build your own chatbot in minutes
+### ChatbotCanvas - Build your own chatbot in minutes
 
 ChatbotCanvas is a platform that allows you to extract FAQs from websites or documents, transform them into structured data, and store them in a vector database for semantic search. It integrates with modern LLMs to let you build and deploy your own intelligent chatbots quickly and easily.
 
@@ -75,9 +75,10 @@ This starts the app at http://localhost:5173.
 
 ## ⚙️ Environment Variables
 
-### Free api keys for env
- # Free LLMs via OpenRouter : https://openrouter.ai/
- # Free 1gb Vectordb via Qdrant : https://qdrant.tech/pricing/
+### Get free Api keys for env
+
+Free LLMs via Openrouter : https://openrouter.ai/
+Free tier vectordb via Qdrant : https://qdrant.tech/pricing/
 
 ### Backend .env
 
