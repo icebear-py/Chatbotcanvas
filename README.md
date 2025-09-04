@@ -6,7 +6,7 @@ ChatbotCanvas is a platform that allows you to extract FAQs from websites or doc
 
 ## 🎥 Demo
 
-[Watch Demo](https://github.com/your-username/chatbotcanvas/blob/main/demo.mp4?raw=true)
+[Watch Demo](https://github.com/icebear-py/chatbotcanvas/blob/main/demo.mp4?raw=true)
 
 ---
 
