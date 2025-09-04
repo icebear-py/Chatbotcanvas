@@ -161,7 +161,7 @@ const Workbench: React.FC = () => {
         return `curl -X POST "${API_BASE_URL}/api/chat" \\
   -H "Content-Type: application/json" \\
   -H "api-key: ${apiKey}" \\
-  -d '{"message": "your question here"}'`
+  -d '{"query": "your question here"}'`
 
       case 'python':
         return `import requests
@@ -174,7 +174,7 @@ headers = {
 response = requests.post(
     "${API_BASE_URL}/api/chat",
     headers=headers,
-    json={"message": "your question here"}
+    json={"query": "your question here"}
 )
 
 print(response.json())`
@@ -187,7 +187,7 @@ print(response.json())`
         "api-key": "${apiKey}"
     },
     body: JSON.stringify({
-        message: "your question here"
+        query: "your question here"
     })
 })
 .then(response => response.json())
