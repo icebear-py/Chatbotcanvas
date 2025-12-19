@@ -94,7 +94,7 @@ def extract_text(url: str):
                             faqs += f"{question} {answer}\n"
 
     # Strategy 6: Generic pattern matching
-    for text_node in soup.find_all(text=re.compile(r'\?')):
+    for text_node in soup.find_all(string=re.compile(r'\?')):
         if isinstance(text_node, NavigableString):
             parent = text_node.parent
             if parent and parent.name:
